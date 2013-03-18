@@ -1,0 +1,23 @@
+<DOCTYPE html>
+<html>
+    <head>
+        <title>Sentiment Analysis Manclas</title>
+    </head>
+    <body>
+        <h1>Sentiment Analysis Manclas</h1>
+        <div id="input">
+            <input id="query">
+            <button onclick="freshen()">Update</button>
+        </div>
+        <div id="tweet"></div>
+        <div id="controls">
+            <button onclick="classify('negative')">Negative</button>
+            <button onclick="classify('neutral')">Neutral</button>
+            <button onclick="classify('positive')">Positive</button>
+            <button onclick="next_tweet()">Skip</button>
+        </div>
+
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="train.js"></script>
+    </body>
+</html>

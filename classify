@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+# test classification with bayes
+
+use strict;
+use warnings;
+
+use lib 'lib';
+
+use SentimentAnalysis::Bayes;
+
+my $bayes = SentimentAnalysis::Bayes->new(filename => 'databayes');
+
+while (<>) {
+    chomp;
+
+    my @words = split /\s+/, $_;
+
+    my %count;
+    foreach my $word (@words) {
+        $word = lc $word;
+        $word =~ s/^[^a-z]*//;
+        $word =~ s/[^a-z]*$//;
+        $count{$word}++;
+    }
+
+    print $bayes->classify(\%count), "\n";
+}

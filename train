@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+# train sentiment analysis (really, train a generic naive bayes classifier)
+# James Stanley 2013
+
+use strict;
+use warnings;
+
+use lib 'lib';
+
+use SentimentAnalysis::Bayes;
+
+my $class = shift or die "usage: train CLASS\n";
+
+my $bayes = SentimentAnalysis::Bayes->new( filename => 'databayes' );
+
+while (my $line = <>) {
+    chomp $line;
+
+    my @words = split /\s+/, $line;
+
+    foreach my $word (@words) {
+        $word = lc $word;
+        $word =~ s/^[^a-z]*//;
+        $word =~ s/[^a-z]*$//;
+        $bayes->add($word => $class);
+    }
+
+    $bayes->save;
+}
+
+print $bayes->classify({hello => 1, world => 1}), "\n";

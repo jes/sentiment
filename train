@@ -9,12 +9,12 @@ use lib 'lib';
 
 use SentimentAnalysis::Bayes;
 
-my $class = shift or die "usage: train CLASS\n";
-
 my $bayes = SentimentAnalysis::Bayes->new( filename => 'databayes' );
 
-while (my $line = <>) {
-    chomp $line;
+while (<>) {
+    chomp;
+
+    my ($class, $line) = split /\t/, $_, 2;
 
     my @words = split /\s+/, $line;
 

@@ -25,7 +25,42 @@ sub add {
     $self->{totalwords}++;
 }
 
+# identify the word that is most likely to indicate a class, and use the
+# chosen class
 sub classify {
+    my ($self, $wordcounts) = @_;
+
+    my $bestcat;
+    my $bestscore;
+
+    foreach my $word (keys %$wordcounts) {
+        if (!defined $self->{nwords}{positive}{$word}
+                || !defined $self->{nwords}{negative}{$word}) {
+            next;
+        }
+
+        my ($negscore, $posscore);
+
+        $negscore = ($self->{nwords}{negative}{$word} / $self->{nwords}{negative}{TOTAL})
+            / ($self->{nwords}{positive}{$word} / $self->{nwords}{positive}{TOTAL});
+        $posscore = 1.0 / $negscore;
+
+        if (!defined $bestscore || $posscore > $bestscore) {
+            $bestscore = $posscore;
+            $bestcat = 'positive';
+        }
+
+        if (!defined $bestscore || $negscore > $bestscore) {
+            $bestscore = $negscore;
+            $bestcat = 'negative';
+        }
+    }
+
+    return $bestcat;
+}
+
+# Naive Bayes
+sub _old_classify {
     my ($self, $wordcounts) = @_;
 
     my %score;
@@ -42,7 +77,7 @@ sub classify {
     foreach my $category (keys %score) {
         $score{$category} += log($self->{nwords}{$category}{TOTAL} / $self->{totalwords});
 
-        if (!defined $bestscore || $score{$category} < $bestscore) {
+        if (!defined $bestscore || $score{$category} > $bestscore) {
             $bestscore = $score{$category};
             $bestcat = $category;
         }

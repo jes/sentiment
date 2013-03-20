@@ -10,8 +10,13 @@ use SentimentAnalysis::Bayes;
 
 my $bayes = SentimentAnalysis::Bayes->new(filename => 'databayes');
 
+my $newcount = 0;
+my $oldcount = 0;
+
 while (<>) {
     chomp;
+
+    my ($class, $line) = split /\t/, $_, 2;
 
     my @words = split /\s+/, $_;
 
@@ -26,8 +31,9 @@ while (<>) {
         $count{$word}++;
     }
 
-    next unless keys %count;
-
-    print $bayes->classify(\%count), "\n";
-    print $bayes->_old_classify(\%count), " (old)\n";
+    $newcount++ if $class eq $bayes->classify(\%count);
+    $oldcount++ if $class eq $bayes->_old_classify(\%count);
 }
+
+print "new\t$newcount\n";
+print "old\t$oldcount\n";

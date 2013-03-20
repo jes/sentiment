@@ -16,6 +16,8 @@ while (<>) {
 
     my ($class, $line) = split /\t/, $_, 2;
 
+    next if $class eq 'neutral';
+
     my @words = split /\s+/, $line;
 
     foreach my $word (@words) {
@@ -27,5 +29,3 @@ while (<>) {
 
     $bayes->save;
 }
-
-print $bayes->classify({hello => 1, world => 1}), "\n";

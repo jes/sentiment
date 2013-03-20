@@ -12,11 +12,15 @@ my $bayes = SentimentAnalysis::Bayes->new(filename => 'databayes');
 
 my $newcount = 0;
 my $oldcount = 0;
+my $total = 0;
 
 while (<>) {
     chomp;
 
     my ($class, $line) = split /\t/, $_, 2;
+
+    # we can't classify as neutral yet
+    next if $class eq 'neutral';
 
     my @words = split /\s+/, $_;
 
@@ -33,7 +37,9 @@ while (<>) {
 
     $newcount++ if $class eq $bayes->classify(\%count);
     $oldcount++ if $class eq $bayes->_old_classify(\%count);
+    $total++;
 }
 
 print "new\t$newcount\n";
 print "old\t$oldcount\n";
+print "total\t$total\n";

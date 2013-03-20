@@ -34,16 +34,14 @@ sub classify {
     my $bestscore;
 
     foreach my $word (keys %$wordcounts) {
-        if (!defined $self->{nwords}{positive}{$word}
-                || !defined $self->{nwords}{negative}{$word}) {
-            next;
-        }
+        my $negamt = ($self->{nwords}{negative}{$word}||0) / $self->{nwords}{negative}{TOTAL};
+        my $posamt = ($self->{nwords}{positive}{$word}||0) / $self->{nwords}{positive}{TOTAL};
 
-        my ($negscore, $posscore);
+        my ($negscore, $posscore) = (0,0);
 
-        $negscore = ($self->{nwords}{negative}{$word} / $self->{nwords}{negative}{TOTAL})
-            / ($self->{nwords}{positive}{$word} / $self->{nwords}{positive}{TOTAL});
-        $posscore = 1.0 / $negscore;
+
+        $negscore = $negamt / $posamt if $posamt;
+        $posscore = $posamt / $negamt if $negamt;
 
         if (!defined $bestscore || $posscore > $bestscore) {
             $bestscore = $posscore;

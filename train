@@ -26,6 +26,6 @@ while (<>) {
         $word =~ s/[^a-z]*$//;
         $bayes->add($word => $class);
     }
-
-    $bayes->save;
 }
+
+$bayes->save;

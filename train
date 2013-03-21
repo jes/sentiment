@@ -24,6 +24,7 @@ while (<>) {
         $word = lc $word;
         $word =~ s/^[^a-z]*//;
         $word =~ s/[^a-z]*$//;
+        next if $word eq '';
         $bayes->add($word => $class);
     }
 }

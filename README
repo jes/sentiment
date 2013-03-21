@@ -3,3 +3,5 @@ Sentiment Analysis.
 Currently based on naive Bayes.
 
 Not at all suitable for use yet.
+
+training.list.movies comes from http://www.cs.cornell.edu/people/pabo/movie-review-data/

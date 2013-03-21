@@ -25,36 +25,28 @@ sub add {
     $self->{totalwords}++;
 }
 
-# identify the word that is most likely to indicate a class, and use the
-# chosen class
+# classify each word as positive or negative, and use the most abundant class
 sub classify {
     my ($self, $wordcounts) = @_;
 
-    my $bestcat;
-    my $bestscore;
+    my %score = (positive => 1, negative => 1);
 
     foreach my $word (keys %$wordcounts) {
-        my $negamt = ($self->{nwords}{negative}{$word}||0) / $self->{nwords}{negative}{TOTAL};
-        my $posamt = ($self->{nwords}{positive}{$word}||0) / $self->{nwords}{positive}{TOTAL};
+        my $negamt = ($self->{nwords}{negative}{$word}||0.1) / $self->{nwords}{negative}{TOTAL};
+        my $posamt = ($self->{nwords}{positive}{$word}||0.1) / $self->{nwords}{positive}{TOTAL};
 
-        my ($negscore, $posscore) = (0,0);
-
+        my ($negscore, $posscore) = (0, 0);
 
         $negscore = $negamt / $posamt if $posamt;
         $posscore = $posamt / $negamt if $negamt;
 
-        if (!defined $bestscore || $posscore > $bestscore) {
-            $bestscore = $posscore;
-            $bestcat = 'positive';
-        }
+        print "$word: + $posamt  - $negamt\n";
 
-        if (!defined $bestscore || $negscore > $bestscore) {
-            $bestscore = $negscore;
-            $bestcat = 'negative';
-        }
+        $score{positive} *= $posscore;
+        $score{negative} *= $negscore;
     }
 
-    return $bestcat;
+    return $score{positive} > $score{negative} ? 'positive' : 'negative';
 }
 
 # Naive Bayes

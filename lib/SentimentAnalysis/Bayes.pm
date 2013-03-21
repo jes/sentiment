@@ -25,6 +25,24 @@ sub add {
     $self->{totalwords}++;
 }
 
+sub _new_classify {
+    my ($self, $wordcounts) = @_;
+
+    my %score = (positive => 1, negative => 1, invert => 0);
+
+    foreach my $word (keys %$wordcounts) {
+        $score{positive}++ if $self->{nwords}{positive}{$word};
+        $score{negative}++ if $self->{nwords}{negative}{$word};
+        #$score{invert}++ if $self->{nwords}{invert}{$word};
+    }
+
+    if ($score{invert} % 2 == 0) {
+        return $score{positive} > $score{negative} ? 'positive' : 'negative';
+    } else {
+        return $score{positive} < $score{negative} ? 'positive' : 'negative';
+    }
+}
+
 # classify each word as positive or negative, and use the most abundant class
 sub classify {
     my ($self, $wordcounts) = @_;
@@ -39,8 +57,6 @@ sub classify {
 
         $negscore = $negamt / $posamt if $posamt;
         $posscore = $posamt / $negamt if $negamt;
-
-        print "$word: + $posamt  - $negamt\n";
 
         $score{positive} *= $posscore;
         $score{negative} *= $negscore;
@@ -88,7 +104,10 @@ sub load {
     while (<$fh>) {
         chomp;
         my ($category, $word, $count) = split /\t/;
+        next if $word eq 'TOTAL';
+
         $self->{nwords}{$category}{$word} += $count;
+        $self->{nwords}{$category}{TOTAL} += $count;
         $self->{totalwords} += $count;
     }
     close $fh;
@@ -101,6 +120,7 @@ sub save {
         or die "can't write $self->{filename}: $!";
     foreach my $category (keys %{ $self->{nwords} }) {
         foreach my $word (keys %{ $self->{nwords}{$category} }) {
+            next if $word eq 'TOTAL';
             print $fh "$category\t$word\t$self->{nwords}{$category}{$word}\n";
         }
     }

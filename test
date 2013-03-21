@@ -11,6 +11,7 @@ use SentimentAnalysis::Bayes;
 my $bayes = SentimentAnalysis::Bayes->new(filename => 'databayes');
 
 my $newcount = 0;
+my $thecount = 0;
 my $oldcount = 0;
 my $total = 0;
 
@@ -35,11 +36,13 @@ while (<>) {
         $count{$word}++;
     }
 
-    $newcount++ if $class eq $bayes->classify(\%count);
+    $newcount++ if $class eq $bayes->_new_classify(\%count);
+    $thecount++ if $class eq $bayes->classify(\%count);
     $oldcount++ if $class eq $bayes->_old_classify(\%count);
     $total++;
 }
 
 print "new\t$newcount\n";
+print "the\t$thecount\n";
 print "old\t$oldcount\n";
 print "total\t$total\n";
